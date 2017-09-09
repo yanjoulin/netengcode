@@ -3,6 +3,7 @@ import paramiko
 import time
 import os
 import subprocess
+from VMList import *
 
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
