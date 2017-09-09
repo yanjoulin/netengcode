@@ -19,6 +19,10 @@ ssh.connect( hostname = target_host , username = un, password = pwd )
 print 'STRESS Command execution is in progress to increase Load ...'
 print '========================================================================================'
 s_load = 0
+
+vm_list=VMList(1,"ScaledownThread",raw)
+vm_list.start()
+Counter=1
 while s_load < 80:
 	stdin, stdout, stderr = ssh.exec_command(stress)
 	time.sleep(20)
@@ -39,7 +43,12 @@ while s_load < 80:
 		print 'Load Average Reached above 80%, spinning new VNF ... Continue with Ping Pong :-)'
 		ssh.close()
 		print '****************************************************************************************'
-		os.system('virt-install --name demovm01_clone --ram 2048 --vcpus 1 --cdrom=/var/lib/libvirt/images/CentOS-7-x86_64-Minimal.iso --disk path=/var/lib/libvirt/images/centos7_1.img,size=20,bus=virtio,format=qcow2 --os-type linux --os-variant ubuntu16.04 --network=bridge=br0,model=virtio --graphics vnc --hvm --virt-type=kvm --console pty,target_type=virtio') 
+		
+		Command='virt-install --name demovm{}_clone --ram 2048 --vcpus 1 --cdrom=/var/lib/libvirt/images/CentOS-7-x86_64-Minimal.iso --disk path=/var/lib/libvirt/images/centos7_1.img,size=20,bus=virtio,format=qcow2 --os-type linux --os-variant ubuntu16.04 --network=bridge=br0,model=virtio --graphics vnc --hvm --virt-type=kvm --console pty,target_type=virtio'.format(Counter)
+	        os.system([Command])
+		VMName='demovm{}_clone'.format(Counter)
+		vm_list.add(VMName,target_host,target_port,sshusername=un,sshpassword=pwd)
+		Counter+=1
 	else: 
 		print 'All Good, Time for Ping Pong !!!'
 		print '----------------------------------------------------------------------------------------'
